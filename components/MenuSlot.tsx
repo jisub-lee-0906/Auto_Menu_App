@@ -70,10 +70,10 @@ export default function MenuSlot({
             {/* Content */}
             <div className="flex-grow flex items-center justify-center py-1 w-full overflow-hidden">
                 <p className={`
-                    w-full text-center font-bold leading-snug break-keep
+                    w-full text-center font-bold leading-snug break-words
                     ${isLocked ? 'text-[#8B95A1]' : 'text-[#191F28]'}
-                    text-[12px]
-                    line-clamp-2
+                    text-[15px]
+                    line-clamp-4
                 `}>
                     {menuItem || <span className="text-[#D1D6DB] animate-pulse">...</span>}
                 </p>
