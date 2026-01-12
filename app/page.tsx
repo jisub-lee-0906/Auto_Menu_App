@@ -103,7 +103,7 @@ export default function Home() {
           오늘의 급식
         </h1>
         <p className="text-[#8B95A1] text-lg mt-1 tracking-tight">
-          고민 없이 먹는 즐거움
+          영양은 든든하게, 식단은 똑똑하게.
         </p>
       </header>
 
@@ -126,6 +126,21 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <footer className="w-full text-center py-8 opacity-60 hover:opacity-100 transition-opacity duration-300">
+        <div className="inline-flex items-center justify-center gap-3 text-[12px] font-medium text-[#8B95A1] tracking-tight">
+          <span className="flex items-center gap-1.5">
+            <span className="uppercase text-[10px] font-bold text-[#B0B8C1] tracking-wider">Dev</span>
+            <span className="text-[#4E5968]">이지섭</span>
+          </span>
+          <span className="w-0.5 h-2.5 bg-[#E5E8EB] rounded-full"></span>
+          <span className="flex items-center gap-1.5">
+            <span className="uppercase text-[10px] font-bold text-[#B0B8C1] tracking-wider">Data</span>
+            <span className="text-[#4E5968]">문채영</span>
+          </span>
+        </div>
+      </footer>
 
       {/* Floating Action Bar - Toss Style: Bottom Fixed, High Contrast */}
       <div className="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
