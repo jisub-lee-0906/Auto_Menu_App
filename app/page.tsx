@@ -28,10 +28,11 @@ export default function Home() {
 
   const handleGenerateValues = useCallback(() => {
     setIsGenerating(true);
+    // Add a satisfying subtle delay for effect
     setTimeout(() => {
       setMenu((prev) => generateMenu(prev || undefined, locked));
       setIsGenerating(false);
-    }, 300);
+    }, 400);
   }, [locked]);
 
   const handleToggleLock = (key: keyof Menu) => {
@@ -41,6 +42,11 @@ export default function Home() {
   const handleRefreshItem = (key: keyof Menu) => {
     setMenu((prev) => {
       if (!prev) return null;
+      // Temporarily lock everything else to just refresh one item
+      // Actually generateMenu respects locks passed in. 
+      // To refresh ONE item, we conceptually want to "keep everything else".
+      // So we construe a temporary lock state where everything is TRUE except the target.
+
       const tempLocked: LockedState = {
         rice: true,
         soup: true,
@@ -51,14 +57,17 @@ export default function Home() {
         dessert: true,
         [key]: false,
       };
+
       return generateMenu(prev, tempLocked);
     });
   };
 
   const copyToClipboard = () => {
     if (!menu) return;
-    const text = `[오늘의 점심] ${menu.rice}, ${menu.soup}, ${menu.main}, ${menu.side1}, ${menu.side2}, ${menu.kimchi}, ${menu.dessert}`;
+    const text = `[오늘의 급식] 🍚${menu.rice} 🍲${menu.soup} 🍖${menu.main} 🥗${menu.side1}, ${menu.side2} 🥬${menu.kimchi} 🍪${menu.dessert}`;
     navigator.clipboard.writeText(text).then(() => {
+      // Could add a toast here. For now alert is simple but let's try to avoid native alert if possible in future.
+      // Keeping alert for simplicity request.
       alert('식단이 복사되었습니다! 📋');
     });
   };
@@ -69,14 +78,15 @@ export default function Home() {
     try {
       const canvas = await html2canvas(trayRef.current, {
         scale: 2, // High resolution
-        backgroundColor: '#f1f5f9', // slate-100 logic
+        backgroundColor: '#f5f5f4', // Match bg-stone-100/50 context
         logging: false,
+        useCORS: true,
       });
 
       const image = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = image;
-      link.download = `오늘의급식_${new Date().toLocaleDateString().replace(/\\./g, '').replace(/ /g, '-')}.png`;
+      link.download = `오늘의급식_${new Date().toISOString().split('T')[0]}.png`;
       link.click();
     } catch (err) {
       console.error('Failed to save image:', err);
@@ -85,27 +95,22 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 py-4 px-6 shadow-sm sticky top-0 z-10 flex justify-between items-center">
-        <h1 className="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
-          <span>🍱</span> 오늘의 급식
+    <div className="min-h-screen flex flex-col font-sans selection:bg-[#3182F6] selection:text-white pb-32">
+
+      {/* Header - Toss Style: Simple, Big, Bold */}
+      <header className="pt-10 pb-4 px-6 max-w-2xl mx-auto w-full">
+        <h1 className="text-[32px] font-bold tracking-tighter text-[#191F28] leading-tight">
+          오늘의 급식
         </h1>
+        <p className="text-[#8B95A1] text-lg mt-1 tracking-tight">
+          고민 없이 먹는 즐거움
+        </p>
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center justify-center p-4 gap-8 mb-32">
-
-        <div className="text-center space-y-2 mb-2">
-          <p className="text-gray-500">
-            오늘 뭐 먹지? 고민될 때 버튼 한 번으로 해결하세요! (v1.0)
-          </p>
-        </div>
-
-        {/* The Tray */}
+      <main className="flex-grow px-5 flex flex-col">
         {menu ? (
-          <div ref={trayRef} className="p-4 rounded-3xl bg-slate-100">
-            {/* Wrapper for capture to include background if needed, or just capture Tray directly */}
+          <div ref={trayRef} className="w-full flex justify-center py-2">
             <MenuTray
               menu={menu}
               lockedState={locked}
@@ -114,61 +119,59 @@ export default function Home() {
             />
           </div>
         ) : (
-          <div className="h-96 flex items-center justify-center text-gray-400">
-            메뉴를 불러오는 중입니다...
+          <div className="h-64 flex flex-col items-center justify-center text-[#B0B8C1] space-y-4">
+            {/* Simple Pulse Loader */}
+            <div className="w-10 h-10 rounded-full bg-[#E5E8EB] animate-pulse"></div>
+            <p className="font-medium">맛있는 메뉴를 준비하고 있어요</p>
           </div>
         )}
-
       </main>
 
-      {/* Action Controls */}
-      <div className="fixed bottom-8 left-0 right-0 z-20 flex flex-col items-center gap-4 w-full pointer-events-none">
-        {/* Blocks pointer events on container but allows on buttons */}
+      {/* Floating Action Bar - Toss Style: Bottom Fixed, High Contrast */}
+      <div className="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
+        <div className="max-w-md mx-auto flex items-stretch gap-3 pointer-events-auto transition-transform duration-500 ease-out transform translate-y-0">
 
-        {/* Main Generate Button */}
-        <button
-          onClick={handleGenerateValues}
-          disabled={isGenerating}
-          className={`
-              pointer-events-auto
-              shadow-2xl text-white text-xl font-bold py-4 px-12 rounded-full transform transition-all 
-              ${isGenerating ? 'bg-gray-400 scale-95' : 'bg-blue-600 hover:bg-blue-700 hover:scale-105 active:scale-95'}
-              flex items-center gap-3 ring-4 ring-white/50
-            `}
-        >
-          {isGenerating ? (
-            <>
-              <svg className="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              생성 중...
-            </>
-          ) : (
-            <>
-              <span>🎲</span> 전체 다시 짜기
-            </>
-          )}
-        </button>
+          {/* Generate Button (Main) */}
+          <button
+            onClick={handleGenerateValues}
+            disabled={isGenerating}
+            className={`
+                 flex-grow flex items-center justify-center gap-2 py-4 px-6 rounded-[20px] 
+                 text-white font-bold text-[17px] shadow-lg shadow-blue-500/30
+                 transition-all active:scale-[0.96] duration-200
+                 ${isGenerating ? 'bg-[#B0B8C1] cursor-not-allowed' : 'bg-[#3182F6] hover:bg-[#2C75DE]'}
+              `}
+          >
+            {isGenerating ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white/90" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>생성 중</span>
+              </span>
+            ) : (
+              <span>전체 다시 짜기</span>
+            )}
+          </button>
 
-        {/* Secondary Actions */}
-        <div className="pointer-events-auto flex gap-3 bg-white/90 backdrop-blur-md p-2 rounded-full shadow-lg border border-gray-100">
-          <button
-            onClick={copyToClipboard}
-            className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-2 font-medium"
-          >
-            📋 텍스트 복사
-          </button>
-          <div className="w-px bg-gray-300 my-1"></div>
-          <button
-            onClick={saveAsImage}
-            className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-2 font-medium"
-          >
-            📷 이미지 저장
-          </button>
+          {/* Secondary Actions (Icon Group) */}
+          <div className="flex bg-white rounded-[20px] shadow-lg shadow-black/5 items-center p-1.5 gap-1">
+            <button
+              onClick={copyToClipboard}
+              className="w-12 h-full flex items-center justify-center rounded-[16px] hover:bg-[#F2F4F6] text-[#4E5968] transition-colors"
+              title="텍스트로 복사"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" /></svg>
+            </button>
+            <div className="w-px h-4 bg-[#E5E8EB]"></div>
+            <button
+              onClick={saveAsImage}
+              className="w-12 h-full flex items-center justify-center rounded-[16px] hover:bg-[#F2F4F6] text-[#4E5968] transition-colors"
+              title="이미지로 저장"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            </button>
+          </div>
         </div>
       </div>
-
     </div>
   );
 }

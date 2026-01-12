@@ -19,87 +19,84 @@ export default function MenuTray({
 }: MenuTrayProps) {
 
     return (
-        <div className="bg-slate-200 p-6 rounded-3xl shadow-xl border-4 border-slate-300/50 max-w-4xl w-full mx-auto">
-            {/* 
-        Tray Layout
-        Let's assume a standard 2-row layout or a flexible grid appropriate for mobile 
-        Row 1: Rice, Soup, Main
-        Row 2: Side1, Side2, Kimchi
-        Dessert can be separate or included?? 
-        The PRD mentions 6 items + dessert = 7 items?
-        PRD: Rice, Soup, Main, Side (1-2), Kimchi, Dessert.
-        That's 6 or 7 slots.
-        Let's do a responsive grid.
-      */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="w-full max-w-2xl mx-auto space-y-4">
 
-                {/* Row 1 */}
-                <MenuSlot
-                    title="밥 (Rice)"
-                    menuItem={menu.rice}
-                    isLocked={lockedState.rice}
-                    onToggleLock={() => onToggleLock('rice')}
-                    onRefresh={() => onRefreshItem('rice')}
-                    bgColor="bg-orange-50"
-                />
+            {/* Grid Layout - No Container, just floating cards */}
+            <div className="space-y-3">
 
-                <MenuSlot
-                    title="국 (Soup)"
-                    menuItem={menu.soup}
-                    isLocked={lockedState.soup}
-                    onToggleLock={() => onToggleLock('soup')}
-                    onRefresh={() => onRefreshItem('soup')}
-                    bgColor="bg-yellow-50"
-                />
+                {/* Top Row: Main Dish & Sides */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <MenuSlot
+                        title="메인 반찬"
+                        subtitle="MAIN"
+                        menuItem={menu.main}
+                        isLocked={lockedState.main}
+                        onToggleLock={() => onToggleLock('main')}
+                        onRefresh={() => onRefreshItem('main')}
+                        className="lg:col-span-1 min-h-[140px]"
+                    />
+                    <MenuSlot
+                        title="반찬 1"
+                        subtitle="SIDE"
+                        menuItem={menu.side1}
+                        isLocked={lockedState.side1}
+                        onToggleLock={() => onToggleLock('side1')}
+                        onRefresh={() => onRefreshItem('side1')}
+                        className="min-h-[140px]"
+                    />
+                    <MenuSlot
+                        title="반찬 2"
+                        subtitle="SIDE"
+                        menuItem={menu.side2}
+                        isLocked={lockedState.side2}
+                        onToggleLock={() => onToggleLock('side2')}
+                        onRefresh={() => onRefreshItem('side2')}
+                        className="min-h-[140px]"
+                    />
+                    <MenuSlot
+                        title="김치"
+                        subtitle="KIMCHI"
+                        menuItem={menu.kimchi}
+                        isLocked={lockedState.kimchi}
+                        onToggleLock={() => onToggleLock('kimchi')}
+                        onRefresh={() => onRefreshItem('kimchi')}
+                        className="min-h-[140px]"
+                    />
+                </div>
 
-                <MenuSlot
-                    title="메인 (Main)"
-                    menuItem={menu.main}
-                    isLocked={lockedState.main}
-                    onToggleLock={() => onToggleLock('main')}
-                    onRefresh={() => onRefreshItem('main')}
-                    bgColor="bg-red-50"
-                />
-
-                {/* Row 2 */}
-                <MenuSlot
-                    title="반찬 1"
-                    menuItem={menu.side1}
-                    isLocked={lockedState.side1}
-                    onToggleLock={() => onToggleLock('side1')}
-                    onRefresh={() => onRefreshItem('side1')}
-                    bgColor="bg-green-50"
-                />
-
-                <MenuSlot
-                    title="반찬 2"
-                    menuItem={menu.side2}
-                    isLocked={lockedState.side2}
-                    onToggleLock={() => onToggleLock('side2')}
-                    onRefresh={() => onRefreshItem('side2')}
-                    bgColor="bg-green-50"
-                />
-
-                <MenuSlot
-                    title="김치"
-                    menuItem={menu.kimchi}
-                    isLocked={lockedState.kimchi}
-                    onToggleLock={() => onToggleLock('kimchi')}
-                    onRefresh={() => onRefreshItem('kimchi')}
-                    bgColor="bg-red-50/50"
-                />
-
+                {/* Bottom Row: Key Staples (Rice & Soup) */}
+                <div className="grid grid-cols-2 gap-3">
+                    <MenuSlot
+                        title="밥"
+                        subtitle="RICE"
+                        menuItem={menu.rice}
+                        isLocked={lockedState.rice}
+                        onToggleLock={() => onToggleLock('rice')}
+                        onRefresh={() => onRefreshItem('rice')}
+                        className="min-h-[150px]"
+                    />
+                    <MenuSlot
+                        title="국/찌개"
+                        subtitle="SOUP"
+                        menuItem={menu.soup}
+                        isLocked={lockedState.soup}
+                        onToggleLock={() => onToggleLock('soup')}
+                        onRefresh={() => onRefreshItem('soup')}
+                        className="min-h-[150px]"
+                    />
+                </div>
             </div>
 
-            {/* Dessert Slot - Full Width or centered? */}
-            <div className="mt-4 max-w-xs mx-auto">
+            {/* Dessert - distinct subtle separation */}
+            <div className="mx-auto max-w-sm pt-2">
                 <MenuSlot
-                    title="후식 (Dessert)"
+                    title="후식"
+                    subtitle="DESSERT"
                     menuItem={menu.dessert}
                     isLocked={lockedState.dessert}
                     onToggleLock={() => onToggleLock('dessert')}
                     onRefresh={() => onRefreshItem('dessert')}
-                    bgColor="bg-purple-50"
+                    className="min-h-[100px] bg-gradient-to-br from-white to-[#F9FAFB]"
                 />
             </div>
         </div>

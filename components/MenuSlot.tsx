@@ -4,72 +4,89 @@ import React from 'react';
 
 interface MenuSlotProps {
     title: string;
+    subtitle?: string; // e.g. "Main Dish"
     menuItem: string;
     isLocked: boolean;
     onToggleLock: () => void;
     onRefresh: () => void;
-    bgColor?: string; // Optional specific color for the slot category
+    className?: string; // allow external grid positioning
 }
 
 export default function MenuSlot({
     title,
+    subtitle,
     menuItem,
     isLocked,
     onToggleLock,
     onRefresh,
-    bgColor = 'bg-white',
+    className = '',
 }: MenuSlotProps) {
     return (
-        <div className={`relative flex flex-col items-center justify-center p-4 rounded-xl shadow-md border-2 transition-all duration-300 ${isLocked ? 'border-red-400 bg-gray-50' : 'border-gray-200 ' + bgColor} hover:shadow-lg min-h-[160px]`}>
+        <div
+            className={`
+                group relative flex flex-col justify-between p-5 
+                rounded-[24px] transition-all duration-200 ease-spring
+                ${isLocked
+                    ? 'bg-[#F2F4F6] ring-inset ring-2 ring-[#E5E8EB]'
+                    : 'bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:-translate-y-1 active:scale-[0.96]'
+                }
+                ${className}
+            `}
+        >
+            {/* Header: Title & Controls */}
+            <div className="flex justify-between items-start mb-1">
+                <div className="flex flex-col">
+                    {/* Subtitle is hidden or very subtle in minimal design, treating Title as the main label */}
+                    <h3 className="text-[13px] font-semibold text-[#8B95A1] tracking-tight">{title}</h3>
+                </div>
 
-            {/* Category Title */}
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">{title}</h3>
-
-            {/* Menu Item Name */}
-            <p className={`text-xl font-extrabold text-gray-800 text-center break-keep transition-all ${isLocked ? 'text-gray-600' : ''}`}>
-                {menuItem || '...'}
-            </p>
-
-            {/* Controls */}
-            <div className="absolute top-2 right-2 flex gap-2">
-                {/* Refresh Button (Only show if not locked) */}
-                {!isLocked && (
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 mobile-always-visible z-10">
+                    {/* Lock Button */}
                     <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onRefresh();
-                        }}
-                        className="p-1.5 rounded-full hover:bg-gray-200 text-gray-400 hover:text-blue-500 transition-colors"
-                        title="이 메뉴만 바꾸기"
+                        onClick={(e) => { e.stopPropagation(); onToggleLock(); }}
+                        className={`p-1.5 rounded-full transition-colors ${isLocked ? 'bg-[#FFEDED] text-[#F04452]' : 'hover:bg-[#F2F4F6] text-[#B0B8C1]'}`}
+                        aria-label={isLocked ? "Unlock" : "Lock"}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" />
-                        </svg>
+                        {isLocked ? (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg>
+                        )}
                     </button>
-                )}
 
-                {/* Lock Toggle */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleLock();
-                    }}
-                    className={`p-1.5 rounded-full transition-colors ${isLocked ? 'text-red-500 bg-red-100 hover:bg-red-200' : 'text-gray-300 hover:text-gray-500 hover:bg-gray-100'}`}
-                    title={isLocked ? '잠금 해제' : '고정하기'}
-                >
-                    {isLocked ? (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
-                        </svg>
+                    {/* Refresh Button */}
+                    {!isLocked && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onRefresh(); }}
+                            className="p-1.5 rounded-full hover:bg-[#F2F4F6] text-[#B0B8C1] hover:text-[#3182F6] transition-colors"
+                            aria-label="Refresh Item"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        </button>
                     )}
-                </button>
+                </div>
             </div>
+
+            {/* Content */}
+            <div className="flex-grow flex items-center justify-center py-1 w-full overflow-hidden">
+                <p className={`
+                    w-full text-center font-bold leading-snug break-keep
+                    ${isLocked ? 'text-[#8B95A1]' : 'text-[#191F28]'}
+                    text-[12px]
+                    line-clamp-2
+                `}>
+                    {menuItem || <span className="text-[#D1D6DB] animate-pulse">...</span>}
+                </p>
+            </div>
+
+            <style jsx>{`
+                .ease-spring { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                @media (hover: none) {
+                    .mobile-always-visible {
+                        opacity: 1 !important;
+                    }
+                }
+            `}</style>
         </div>
     );
 }
