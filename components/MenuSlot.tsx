@@ -68,9 +68,9 @@ export default function MenuSlot({
             </div>
 
             {/* Content */}
-            <div className="flex-grow flex items-center justify-center py-1 w-full overflow-hidden">
+            <div className="flex-grow flex items-center justify-center py-1 w-full">
                 <p className={`
-                    w-full text-center font-bold leading-snug break-words
+                    w-full text-center font-bold leading-normal break-words pb-1
                     ${isLocked ? 'text-[#8B95A1]' : 'text-[#191F28]'}
                     text-[15px]
                     line-clamp-4
