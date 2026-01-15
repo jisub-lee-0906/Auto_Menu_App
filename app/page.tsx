@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { generateMenu, Menu, LockedState } from '@/lib/menuGenerator';
 import MenuTray from '@/components/MenuTray';
+import MenuSearch from '@/components/MenuSearch';
 import html2canvas from 'html2canvas';
 
 const INITIAL_LOCK_STATE: LockedState = {
@@ -19,6 +20,7 @@ export default function Home() {
   const [menu, setMenu] = useState<Menu | null>(null);
   const [locked, setLocked] = useState<LockedState>(INITIAL_LOCK_STATE);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const trayRef = useRef<HTMLDivElement>(null);
 
   // Initial generation
@@ -98,14 +100,30 @@ export default function Home() {
     <div className="min-h-screen flex flex-col font-sans selection:bg-[#3182F6] selection:text-white pb-32">
 
       {/* Header - Toss Style: Simple, Big, Bold */}
-      <header className="pt-10 pb-4 px-6 max-w-2xl mx-auto w-full">
-        <h1 className="text-[32px] font-bold tracking-tighter text-[#191F28] leading-tight">
-          오늘의 급식
-        </h1>
-        <p className="text-[#8B95A1] text-lg mt-1 tracking-tight">
-          영양은 든든하게, 식단은 똑똑하게.
-        </p>
+      <header className="pt-10 pb-4 px-6 max-w-2xl mx-auto w-full flex items-start justify-between">
+        <div>
+          <h1 className="text-[32px] font-bold tracking-tighter text-[#191F28] leading-tight">
+            오늘의 급식
+          </h1>
+          <p className="text-[#8B95A1] text-lg mt-1 tracking-tight">
+            영양은 든든하게, 식단은 똑똑하게.
+          </p>
+        </div>
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="mt-2 p-2.5 rounded-full bg-white shadow-sm border border-gray-100 text-gray-600 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+          title="메뉴 검색"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
       </header>
+
+      <MenuSearch
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
 
       {/* Main Content */}
       <main className="flex-grow px-5 flex flex-col">
